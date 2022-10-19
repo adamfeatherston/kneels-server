@@ -14,10 +14,10 @@ def get_all_styles():
         # Write the SQL query to get the information you want
         db_cursor.execute("""
         SELECT
-            si.id,
-            si.style,
-            si.price
-        FROM Style si
+            st.id,
+            st.style,
+            st.price
+        FROM Style st
         """)
 
         # Initialize an empty list to hold all style representations

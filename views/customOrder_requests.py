@@ -137,17 +137,17 @@ def create_order(new_order):
 def delete_order(id):
     # Initial -1 value for order index, in case one isn't found
     order_index = -1
+    with sqlite3.connect("./kneeldiamonds.sqlite3") as conn:
+        conn.row_factory = sqlite3.Row
+        db_cursor = conn.cursor()
 
-    # Iterate the CUSTOMORDERS list, but use enumerate() so that you
-    # can access the index value of each item
-    for index, order in enumerate(CUSTOMORDERS):
-        if order["id"] == id:
-            # Found the order. Store the current index.
-            order_index = index
-
-    # If the order was found, use pop(int) to remove it from list
-    if order_index >= 0:
-        CUSTOMORDERS.pop(order_index)
+        db_cursor.execute(
+            """
+        DELETE FROM [Order]
+        WHERE id = ?
+        """,
+            (id,),
+        )
 
 
 def update_order(id, new_order):
