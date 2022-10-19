@@ -1,9 +1,15 @@
 import json
 from http.server import BaseHTTPRequestHandler, HTTPServer
-from views import get_all_metals, get_single_metal
+from views import get_all_metals, get_single_metal, update_metal
 from views import get_all_sizes, get_single_size
 from views import get_all_styles, get_single_style
-from views import get_all_orders, get_single_order, create_order, delete_order, update_order
+from views import (
+    get_all_orders,
+    get_single_order,
+    create_order,
+    delete_order,
+    update_order,
+)
 
 
 class HandleRequests(BaseHTTPRequestHandler):
@@ -101,15 +107,14 @@ class HandleRequests(BaseHTTPRequestHandler):
         # Delete a single animal from the list
         if resource == "orders":
             delete_order(id)
-
+            response = {"message": f"Your order was successfully deleted"}
 
         # Encode the new resource and send in response
-        self.wfile.write("".encode())
+        self.wfile.write(json.dumps(response).encode())
 
     # A method that handles any PUT request.
     def do_PUT(self):
         """Handles PUT requests to the server"""
-        self._set_headers(204)
         content_len = int(self.headers.get("content-length", 0))
         post_body = self.rfile.read(content_len)
         post_body = json.loads(post_body)
@@ -117,9 +122,19 @@ class HandleRequests(BaseHTTPRequestHandler):
         # Parse the URL
         (resource, id) = self.parse_url(self.path)
 
+        success = False
+
         # Update dictionary from animals list
         if resource == "orders":
-            update_order(id, post_body)
+            success = update_order(id, post_body)
+
+        elif resource == "metals":
+            success = update_metal(id, post_body)
+
+        if success:
+            self._set_headers(204)
+        else:
+            self._set_headers(404)
 
         # Encode the new resource and send in response
         self.wfile.write("".encode())
