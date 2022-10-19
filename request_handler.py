@@ -87,6 +87,7 @@ class HandleRequests(BaseHTTPRequestHandler):
         if resource == "orders":
             # Initialize new animal
             new_entry = create_order(post_body)
+         
 
         # Encode the new entry(s) and send in response
         self.wfile.write(json.dumps(new_entry).encode())

@@ -1,16 +1,47 @@
-METALS = [
-    {"id": 1, "metal": "Sterling Silver", "price": 12.42},
-    {"id": 2, "metal": "14K Gold", "price": 736.4},
-    {"id": 3, "metal": "24K Gold", "price": 1258.9},
-    {"id": 4, "metal": "Platinum", "price": 795.45},
-    {"id": 5, "metal": "Palladium", "price": 1241},
-]
+import sqlite3
+import json
+from models import Metal
 
 
 def get_all_metals():
-    return METALS
+    # Open a connection to the database
+    with sqlite3.connect("./kneeldiamonds.sqlite3") as conn:
+
+        # Just use these. It's a Black Box.
+        conn.row_factory = sqlite3.Row
+        db_cursor = conn.cursor()
+
+        # Write the SQL query to get the information you want
+        db_cursor.execute("""
+        SELECT
+            m.id,
+            m.metal,
+            m.price
+        FROM Metal m
+        """)
+
+        # Initialize an empty list to hold all metal representations
+        metals = []
+
+        # Convert rows of data into a Python list
+        dataset = db_cursor.fetchall()
+
+        # Iterate list of data returned from database
+        for row in dataset:
+
+            # Create an metal instance from the current row.
+            # Note that the database fields are specified in
+            # exact order of the parameters defined in the
+            # Metal class above.
+            metal = Metal(row['id'], row['metal'], row['price'])
+
+            metals.append(metal.__dict__)
+
+    return metals
 
     # Function with a single parameter
+
+
 def get_single_metal(id):
     # Variable to hold the found metal, if it exists
     requested_metal = None
